@@ -1,8 +1,8 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import { connectToDatabase } from "@utils/database";
+import User from "@models/user";
 
-import user from "@models/user";
 const handlers = NextAuth({
   providers: [
     GoogleProvider({
@@ -13,13 +13,8 @@ const handlers = NextAuth({
   callbacks: {
     async session({ session }) {
       try {
-        await connectToDatabase();
-
-        const userExists = await user.findOne({ email: session.user.email });
-        if (userExists) {
-          session.user.username = userExists.username;
-        }
-        session.user.id = sessionUser._id.toString();
+        const userExists = await User.findOne({ email: session.user.email });
+        session.user.id = userExists._id.toString();
         return session;
       } catch (error) {
         console.log(error);
@@ -30,11 +25,11 @@ const handlers = NextAuth({
       try {
         await connectToDatabase();
 
-        const userExists = await user.findOne({ email: profile.email });
+        const userExists = await User.findOne({ email: profile.email });
         if (!userExists) {
-          await user.create({
+          await User.create({
             email: profile.email,
-            username: profile.name.replace(/\s/g, "").toLowerCase(),
+            username: profile.name.replace(" ", "").toLowerCase(),
             image: profile.image,
           });
         }
@@ -43,6 +38,33 @@ const handlers = NextAuth({
       }
     },
   },
+
+  // async session({ session }) {
+  //   try {
+  //     const userExists = await User.findOne({ email: session.user.email });
+  //     session.user.id = userExists._id.toString();
+  //     return session;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // },
+
+  // async signIn({ profile }) {
+  //   try {
+  //     await connectToDatabase();
+
+  //     const userExists = await User.findOne({ email: profile.email });
+  //     if (!userExists) {
+  //       await User.create({
+  //         email: profile.email,
+  //         username: profile.name.replace(" ", "").toLowerCase(),
+  //         image: profile.image,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // },
 });
 
 export { handlers as GET, handlers as POST };

@@ -66,7 +66,7 @@ const Navbar = () => {
                   }}
                   className="black_btn"
                 >
-                  Sign in with {provider.name}
+                  Sign in
                 </button>
               ))}
           </>
@@ -78,12 +78,12 @@ const Navbar = () => {
         {session?.user ? (
           <div className="flex">
             <Image
-              src={session?.user?.image}
-              alt="Profile"
-              width={35}
-              height={35}
-              className="rounded-full "
-              onClick={() => setToggleDropdown((prev) => !prev)}
+              src={session?.user.image}
+              width={37}
+              height={37}
+              className="rounded-full"
+              alt="profile"
+              onClick={() => setToggleDropdown(!toggleDropdown)}
             />
 
             {toggleDropdown && (
@@ -122,10 +122,12 @@ const Navbar = () => {
                 <button
                   type="button"
                   key={provider.name}
-                  onClick={() => signIn(provider.id)}
+                  onClick={() => {
+                    signIn(provider.id);
+                  }}
                   className="black_btn"
                 >
-                  Sign In with {provider.name}
+                  Sign in
                 </button>
               ))}
           </>
